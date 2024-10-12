@@ -29,7 +29,7 @@ data.delete_on_destruction(false);
 
 ## Constructors and Placement new
 When creating shared mem, generally make_shared_mem\<T\>() should be used.
-make_shared_mem<T>() uses placement new to construct (in place!) the type T
+make_shared_mem\<T\>() uses placement new to construct (in place!) the type T
 over the shared memory segment. When attaching this way, the destructor of T will also
 be called when the last reference to the shared mem is destroyed.
 ```C++
