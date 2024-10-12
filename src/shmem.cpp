@@ -1,3 +1,4 @@
+#include <boost/interprocess/permissions.hpp>
 #include <schillc/shmem.h>
 
 #include <iostream>
@@ -14,7 +15,9 @@ struct shared_mem_region_impl{
     shared_mem_region_impl(const char* name, std::size_t size)
     {
         std::cout << "shared_mem " << name << "...";
-        shm = bi::shared_memory_object(bi::open_or_create, name, bi::read_write, size);
+        bi::permissions perms;
+        perms.set_unrestricted();
+        shm = bi::shared_memory_object(bi::open_or_create, name, bi::read_write, perms);
         shm.truncate(size);
         region = bi::mapped_region(shm, bi::read_write);
         std::cout << "attached\n";
@@ -40,12 +43,8 @@ const char* shared_mem_region::get_name() const {
     return pimpl->shm.get_name();
 }
 
-void* shared_mem_region::get_address() {
+void* shared_mem_region::get_address() const {
     return pimpl->region.get_address();
-}
-
-std::size_t shared_mem_region::size() const{
-    return pimpl->region.get_size();
 }
 
 void shared_mem_region::delete_on_destruction(bool del) {
