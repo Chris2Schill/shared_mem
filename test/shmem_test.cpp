@@ -5,15 +5,48 @@
 
 struct Data {
     explicit Data() : Data(0) {} 
-    explicit Data(int x) :x(x) { ctor_called = true; } 
-    ~Data() { dtor_called = true; } 
+    explicit Data(int x) :x(x), dtor_called(false) { ctor_called = true; } 
+    ~Data() {
+        Data::destroy(*this);
+    } 
+
+    static void destroy(volatile Data& d) {
+        d.dtor_called = true;
+    }
 
     bool ctor_called = false;
-    bool dtor_called = false;
+    bool dtor_called;
     int x;
+
 };
 
 static const char* SHMEM_NAME = "schillc_shmem_test";
+
+TEST(shmem, presistance) {
+    struct Test {
+        Test(int x) :x(x) {}
+        bool x = false;
+    };
+    {
+        auto data = schillc::make_shared_mem<Test>(SHMEM_NAME, 10);
+        data.delete_on_destruction(false);
+        data->x = true;
+    }
+    {
+        auto data = schillc::shared_mem<Test>(SHMEM_NAME);
+        EXPECT_EQ(data->x, true);
+    }
+
+    {
+        auto data = schillc::make_shared_mem<Test[1]>(SHMEM_NAME, 10);
+        data.delete_on_destruction(false);
+        data[0].x = true;
+    }
+    {
+        auto data = schillc::shared_mem<Test[1]>(SHMEM_NAME);
+        EXPECT_EQ(data[0].x, true);
+    }
+}
 
 TEST(shmem, constructors) {
     { // Regular object
@@ -65,14 +98,14 @@ TEST(shmem, constructors) {
     { // ensure array construction constructs every element when using make_shared_mem
         auto data = schillc::make_shared_mem<Data[10]>(SHMEM_NAME, 69);
         data.delete_on_destruction(false);
-        for (int i = 0; i < data.count(); ++i) {
+        for (std::size_t i = 0; i < data.count(); ++i) {
             EXPECT_EQ(data[i].ctor_called, true);
             EXPECT_EQ(data[i].x, 69);
         }
     }
     { // verify data is still good and attaching arrays works
         auto data = schillc::shared_mem<Data[10]>(SHMEM_NAME);
-        for (int i = 0; i < data.count(); ++i) {
+        for (std::size_t i = 0; i < data.count(); ++i) {
             EXPECT_EQ(data[i].ctor_called, true);
             EXPECT_EQ(data[i].x, 69);
         }
@@ -80,7 +113,7 @@ TEST(shmem, constructors) {
 
     { // ... and when not using make_shared_mem
         auto data = schillc::shared_mem<Data[10]>(SHMEM_NAME);
-        for (int i = 0; i < data.count(); ++i) {
+        for (std::size_t i = 0; i < data.count(); ++i) {
             EXPECT_EQ(data[i].ctor_called, false);
             EXPECT_EQ(data[i].x, 0);
         }
@@ -90,13 +123,15 @@ TEST(shmem, constructors) {
 TEST(shmem, destructors) {
     { // dtor called if make_shared_mem was used
         {
-            auto data = schillc::make_shared_mem<Data>(SHMEM_NAME);
+            auto data = schillc::make_shared_mem<Data>(SHMEM_NAME, 10);
             data.delete_on_destruction(false);
             EXPECT_EQ(data->dtor_called, false);
+            EXPECT_EQ(data->x, 10);
         }
 
         auto data = schillc::shared_mem<Data>(SHMEM_NAME);
         EXPECT_EQ(data->dtor_called, true);
+        EXPECT_EQ(data->x, 10);
     }
 
     { // dtor not called if not last ref
@@ -117,13 +152,13 @@ TEST(shmem, destructors) {
         {
             auto data = schillc::make_shared_mem<Data[2]>(SHMEM_NAME);
             data.delete_on_destruction(false);
-            for (std::size_t i; i < data.count(); ++i) {
+            for (std::size_t i = 0; i < data.count(); ++i) {
                 EXPECT_EQ(data[i].dtor_called, false);
             }
         }
 
         auto data = schillc::shared_mem<Data[2]>(SHMEM_NAME);
-        for (std::size_t i; i < data.count(); ++i) {
+        for (std::size_t i = 0; i < data.count(); ++i) {
             EXPECT_EQ(data[i].dtor_called, true);
         }
     }
@@ -135,13 +170,13 @@ TEST(shmem, destructors) {
             // copy the shm obj out of current scope. now dtors should not be called
             // because its not the last reference
             dcopy = data; 
-            for (std::size_t i; i < data.count(); ++i) {
+            for (std::size_t i = 0; i < data.count(); ++i) {
                 EXPECT_EQ(data[i].dtor_called, false);
             }
         }
 
         auto data = schillc::shared_mem<Data[2]>(SHMEM_NAME);
-        for (std::size_t i; i < data.count(); ++i) {
+        for (std::size_t i = 0; i < data.count(); ++i) {
             EXPECT_EQ(data[i].dtor_called, false);
         }
     }

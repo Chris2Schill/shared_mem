@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <stdexcept>
 
+// TODO REMOVE
+#include <iostream>
 namespace schillc {
 
 template<typename T, std::size_t N>
@@ -123,8 +125,7 @@ std::enable_if_t<std::is_array_v<T>, shared_mem<T>>
 make_shared_mem(const char* name, Args... args) {
     using value_type = std::remove_all_extents_t<T>;
     shared_mem<T> shm(name);
-    std::size_t count = array_size(*shm);
-    for (std::size_t i = 0; i < count; ++i) {
+    for (std::size_t i = 0; i < shm.count(); ++i) {
         value_type* ptr = &shm[i];
         value_type* tptr = new (ptr) value_type(args...);
     }
@@ -137,7 +138,9 @@ make_shared_mem(const char* name, Args... args) {
 template<typename T>
 std::enable_if_t<not std::is_array_v<T>, void>
 delete_shared_mem(shared_mem<T>& shm) {
-    shm.get_address()->~T();
+    // Calls to the destructor may be optimized out.
+    // Refactor destructor to a funtion that operates on a volatile as a work-around
+    shm->~T();
 }
 
 // For array types. deconstruct each index

@@ -56,3 +56,10 @@ struct Data {
 };
 auto data = schillc::shared_mem<Data>(name); // Data constructor not called
 ```
+
+## How to Build
+```bash
+git clone https://github.com/Chris2Schill/shared_mem.git
+cd shared_mem
+./build.sh
+```
