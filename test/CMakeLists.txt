@@ -15,7 +15,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(shmem_test shmem_test.cpp)
-target_link_libraries(shmem_test PRIVATE shmem GTest::gtest_main)
+target_link_libraries(shmem_test PRIVATE shared_mem GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(shmem_test)

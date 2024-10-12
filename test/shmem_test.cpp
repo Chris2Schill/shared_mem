@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <schillc/shmem.h>
+#include <schillc/shared_mem.h>
 #include <cstring>
 
 struct Data {

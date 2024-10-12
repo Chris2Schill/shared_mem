@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <schillc/shmem.h>
+#include <schillc/shared_mem.h>
 #include "data.h"
 
 int main(int argc, char** argv) {

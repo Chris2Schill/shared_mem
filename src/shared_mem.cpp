@@ -1,5 +1,5 @@
 #include <boost/interprocess/permissions.hpp>
-#include <schillc/shmem.h>
+#include <schillc/shared_mem.h>
 
 #include <iostream>
 
