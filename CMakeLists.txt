@@ -3,15 +3,16 @@ cmake_minimum_required(VERSION 3.0)
 
 SET(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+SET(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 project(shmem)
 
+set(SOURCES
+    src/shmem.cpp
+)
 
-add_library(shmem STATIC shmem.cpp)
-target_include_directories(shmem PUBLIC .)
+add_library(shmem STATIC ${SOURCES})
+target_include_directories(shmem PUBLIC include)
 
-add_executable(app1 app1.cpp)
-target_link_libraries(app1 PRIVATE shmem)
-
-add_executable(app2 app2.cpp)
-target_link_libraries(app2 PRIVATE shmem)
+add_subdirectory(examples)
+add_subdirectory(test)
