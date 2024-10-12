@@ -3,7 +3,7 @@
 
 ## Create as generic block of data
 ```C++
-auto data = schillc::make_shared_mem<char[1000]>(name, text);
+auto data = schillc::make_shared_mem<char[1024]>(name, text);
 data[0] = 'A'; // access like an array
 ```
 
@@ -12,6 +12,11 @@ data[0] = 'A'; // access like an array
 struct Data { int x; }
 auto data = schillc::make_shared_mem<Data>(name, text);
 data->x = 69; // access via Data struct
+```
+```C++
+struct Data { int x; }
+auto data = schillc::make_shared_mem<Data[5]>(name, text);
+data[0]->x = 69; // access array via Data struct
 ```
 
 By default the shared memory is cleaned up when the last
