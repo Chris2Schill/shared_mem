@@ -28,7 +28,7 @@ data.delete_on_destruction(false);
 ```
 
 ## Constructors and Placement new
-When creating shared mem, generally make_shared_mem<T>() should be used.
+When creating shared mem, generally make_shared_mem\<T\>() should be used.
 make_shared_mem<T>() uses placement new to construct (in place!) the type T
 over the shared memory segment. When attaching this way, the destructor of T will also
 be called when the last reference to the shared mem is destroyed.
@@ -40,7 +40,7 @@ struct Data {
 auto data = schillc::make_shared_mem<Data>(name, 69); // Paremeters 1 - (n-1) are forwarded to the constructor of Data
 data.x == 69; // true
 ```
-// This also works for array types. Placement new will be called for each array index.
+This also works for array types. Placement new will be called for each array index.
 
 
 ## Attaching without construction
