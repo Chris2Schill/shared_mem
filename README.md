@@ -1,13 +1,13 @@
 
-#Shared Memory made easy.
+# Shared Memory made easy.
 
-##Create as generic block of data
+## Create as generic block of data
 ```C++
 auto data = schillc::make_shared_mem<char[1000]>(name, text);
 data[0] = 'A'; // access like an array
 ```
 
-##Create as struct
+## Create as struct
 ```C++
 struct Data { int x; } 
 auto data = schillc::make_shared_mem<Data>(name, text);
