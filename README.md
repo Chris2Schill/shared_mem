@@ -9,7 +9,7 @@ data[0] = 'A'; // access like an array
 
 ## Create as struct
 ```C++
-struct Data { int x; } 
+struct Data { int x; }
 auto data = schillc::make_shared_mem<Data>(name, text);
 data->x = 69; // access via Data struct
 ```
