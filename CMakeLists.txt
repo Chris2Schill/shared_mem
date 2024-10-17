@@ -6,9 +6,6 @@ SET(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 project(shared_mem)
 
-set(BOOST_INCLUDE_LIBRARIES interprocess)
-set(BOOST_ENABLE_CMAKE ON)
-
 include(cmake/FetchBoost.cmake)
 
 set(SOURCES

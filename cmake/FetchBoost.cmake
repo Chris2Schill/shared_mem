@@ -1,3 +1,5 @@
+set(BOOST_INCLUDE_LIBRARIES interprocess)
+set(BOOST_ENABLE_CMAKE ON)
 include(FetchContent)
 FetchContent_Declare(
   Boost
