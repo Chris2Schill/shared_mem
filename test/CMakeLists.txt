@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 project(test)
 
+set(INSTALL_GTEST OFF)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
